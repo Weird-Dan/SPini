@@ -124,7 +124,7 @@ bool IniManager::LoadIni(std::string filename) {
 }
 
 bool IniManager::LoadIni() {
-  std::std::vector<std::string> sections;
+  std::vector<std::string> sections;
   ini_man.Init(m_Filename);
   if (!ini_man.GetSections(sections)) {
     return false;
