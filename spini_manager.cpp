@@ -123,6 +123,26 @@ bool IniManager::LoadIni(std::string filename) {
     }
 }
 
+bool IniManager::LoadIni() {
+  std::std::vector<std::string> sections;
+  ini_man.Init(m_Filename);
+  if (!ini_man.GetSections(sections)) {
+    return false;
+  } else {
+    for (int i = 0; i < sections.size(); i++) {
+      auto search = data.find(sections[i]);
+      if (search != data.end()) {
+          ini_man.GetSection(sections[i], search->second);
+      } else {
+          IniObject obj;
+          ini_man.GetSection(sections[i], obj);
+          data[sections[i]] = obj;
+      }
+    }
+    return true;
+  }
+}
+
 bool IniManager::WriteSection(std::string filename, std::string section) {
     auto search = data.find(section);
     if(search != data.end()) {

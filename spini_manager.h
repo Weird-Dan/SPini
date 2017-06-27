@@ -18,13 +18,14 @@ public:
   void Clear();
 
   bool LoadIni(std::string filename);
+  bool LoadIni();
 
   void SetValue(std::string filename, std::string section, std::string key, std::string value);
   void SetValue(std::string section, std::string key, std::string value);
 
   bool GetValue(std::string filename, std::string section, std::string key, std::string &res);
   bool GetValue(std::string section, std::string key, std::string &res);
-  
+
   bool GetSection(std::string section, IniObject &obj);
 
   bool WriteSection(std::string filename, std::string section);
