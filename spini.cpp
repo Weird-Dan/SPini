@@ -1,7 +1,5 @@
 #include "spini.h"
 
-
-// override << for ini_object
 std::ostream &operator<<(std::ostream &os, IniObject const &m) {
     os << "_Section: " << m.section << std::endl;
     for (const auto &ent : m.data) {
@@ -10,15 +8,6 @@ std::ostream &operator<<(std::ostream &os, IniObject const &m) {
     return os;
 }
 
-///
-/// SPini Functions
-///
-
-/*
-
- inits module, returns true if the given filename is an .ini file
-
- */
 bool SPini::Init(std::string filename) {
     m_Filename = filename;
     std::string ini = std::string(".ini");
@@ -28,12 +17,6 @@ bool SPini::Init(std::string filename) {
     return false;
 }
 
-
-/*
-
-  Reads section from ini-file and adds it to the ini_object
-
-*/
 bool SPini::GetSection(std::string section, IniObject &obj) {
     std::string ls, sec = std::string("[") + toLower(section) + std::string("]");
     if (IniExists()) {
@@ -70,14 +53,6 @@ bool SPini::GetSection(std::string section, IniObject &obj) {
     return false;
 }
 
-/*
-
-  searches for section
-  if found it adds all key/values to ini_object
-    and writes key/values of ini_object to file
-  else it writes section and key/values from ini_object to file
-
- */
 bool SPini::SimpleSection(std::string section, IniObject &obj) {
     std::string ls, sec = std::string("[") + toLower(section) + std::string("]"), key, value;
     std::vector<std::string> buffer, spacebuffer;
@@ -150,14 +125,6 @@ bool SPini::SimpleSection(std::string section, IniObject &obj) {
     return true;
 }
 
-
-/*
-
-  Writes an ini_object to ini file
-  if section found it adds its key/values to ini_object
-  (does not ovverride existing key/values of ini_object)
-
- * */
 bool SPini::SetSection(std::string section, IniObject &obj) {
     if (obj.data.size() < 1){
         return false;
@@ -250,14 +217,6 @@ bool SPini::SetSection(std::string section, IniObject &obj) {
     return true;
 }
 
-
-/*
-
-GetSetValueAsXxxx searches ini file to find key in section
-if found it returns result in output
-if not, it creates the key with the value of def in the ini file and sets output to the value
-
-*/
 void SPini::GetSetValueAsString(std::string section, std::string key, std::string def, std::string &output) {
     if (!GetValueAsString(section, key, output)) {
         SetValue(section, key, def);
@@ -304,15 +263,6 @@ void SPini::GetSetValueAsBool(std::string section, std::string key, bool def, bo
     }
 }
 
-
-
-/*
-
-SimpleAsXxxx searches ini file to find key in section
-if found it returns result in defout
-if not, it creates the key with the value of defout in the ini file
-
-*/
 void SPini::SimpleAsString(std::string section, std::string key, std::string &defout) {
     std::string def = defout;
     if(!GetValueAsString(section, key, defout)) {
@@ -366,15 +316,6 @@ void SPini::SimpleAsBool(std::string section, std::string key, bool &defout) {
     }
 }
 
-
-
-
-
-/*
-
- tries to get the value of the key in section and sets result to value, returns false if it failes to find value for key
-
- */
 bool SPini::GetValueAsString(std::string section, std::string key, std::string & result) {
     std::string val = GetValue(section, key);
     if (val == std::string("")) return false;
@@ -382,11 +323,6 @@ bool SPini::GetValueAsString(std::string section, std::string key, std::string &
     return true;
 }
 
-/*
-
-  tries to get the value of the key in section and sets result to value, returns false if it failes to find value for key or cannot convert value to int
-
- */
 bool SPini::GetValueAsInt(std::string section, std::string key, int & result) {
     std::string val = GetValue(section, key);
     if (val == std::string("")) return false;
@@ -395,11 +331,6 @@ bool SPini::GetValueAsInt(std::string section, std::string key, int & result) {
     return true;
 }
 
-/*
-
-  tries to get the value of the key in section and sets result to value, returns false if it failes to find value for key or cannot convert value to long
-
- */
 bool SPini::GetValueAsLong(std::string section, std::string key, long & result) {
     std::string val = GetValue(section, key);
     if (val == std::string("")) return false;
@@ -408,11 +339,6 @@ bool SPini::GetValueAsLong(std::string section, std::string key, long & result) 
     return true;
 }
 
-/*
-
-  tries to get the value of the key in section and sets result to value, returns false if it failes to find value for key or cannot convert value to float
-
- */
 bool SPini::GetValueAsFloat(std::string section, std::string key, float & result) {
     std::string val = GetValue(section, key);
     if (val == std::string("")) return false;
@@ -421,11 +347,6 @@ bool SPini::GetValueAsFloat(std::string section, std::string key, float & result
     return true;
 }
 
-/*
-
-  tries to get the value of the key in section and sets result to value, returns false if it failes to find value for key or cannot convert value to double
-
- */
 bool SPini::GetValueAsDouble(std::string section, std::string key, double & result) {
     std::string val = GetValue(section, key);
     if (val == std::string("")) return false;
@@ -434,11 +355,6 @@ bool SPini::GetValueAsDouble(std::string section, std::string key, double & resu
     return true;
 }
 
-/*
-
-  tries to get the value of the key in section and sets result to value, returns false if it failes to find value for key or cannot convert value to bool
-
- */
 bool SPini::GetValueAsBool(std::string section, std::string key, bool & result) {
     std::string val = GetValue(section, key);
     if (val == std::string("")) return false;
@@ -453,13 +369,6 @@ bool SPini::GetValueAsBool(std::string section, std::string key, bool & result) 
     return false;
 }
 
-/*
-
- Opens the ini file, searches for the key and sets its value to value
- if key isn't found, it adds the key=value to the end of the section
- if section isn't found, it adds the section to the end of the file and adds key=value the next line.
-
- */
 bool SPini::SetValue(std::string section, std::string key, std::string value) {
     // set value of key in section in ini-file
     std::string ls, sec = std::string("[") + toLower(section) + std::string("]");
@@ -529,12 +438,6 @@ bool SPini::SetValue(std::string section, std::string key, std::string value) {
     return true;
 }
 
-
-/*
-
- test if able to access the file
-
- */
 bool SPini::IniExists() {
     std::ifstream f(m_Filename);
     if (!f) return false;
@@ -559,12 +462,6 @@ bool SPini::GetSections(std::vector<std::string> &out) {
     return found;
 }
 
-
-/*
-
- searches the ini file for key in section and returns the value of the key as a result
-
- */
 std::string SPini::GetValue(std::string section, std::string key) {
     std::string tmp, result="", ls, sec = std::string("[") + toLower(section) + std::string("]");
     std::ifstream file(m_Filename.c_str());
@@ -592,12 +489,6 @@ std::string SPini::GetValue(std::string section, std::string key) {
     return result;
 }
 
-
-/*
-
- returns the filepath of the RWIni object
-
- */
 std::string SPini::GetIniFilename() {
     return m_Filename;
 }
@@ -607,18 +498,10 @@ std::string SPini::GetIniFilename() {
 // protected methods
 ///////////////////////////////////////////////////////////////////////////////
 
-
-
-/*
-
- returns the location of the first character that is not space of string
-
- */
 size_t SPini::getFirstChar(const std::string & str) {
     return str.find_first_not_of(' ');
 }
 
-/**/
 bool SPini::isKey(const std::string & s, const std::string & key) {
     size_t start = getFirstChar(s); // get start of string
     if (trim(toLower(s.substr(start, start+key.length()))) != key) return false; // test if the key passed in is in the string.
@@ -631,11 +514,6 @@ bool SPini::isKey(const std::string & s, const std::string & key) {
     return true;
 }
 
-/*
-
- returns true if the given string is a section
-
- */
 bool SPini::isSection(const std::string &s) {
     size_t f = s.find_first_not_of(' ');
     size_t o = s.find(std::string("["));
@@ -646,11 +524,6 @@ bool SPini::isSection(const std::string &s) {
     return false;
 }
 
-/*
-
- returns true if the given string is a comment
-
- */
 bool SPini::isComment(const std::string &s) {
     size_t hc = s.find(std::string("#"));
     size_t cc = s.find(std::string(";"));
@@ -661,12 +534,6 @@ bool SPini::isComment(const std::string &s) {
     return false;
 }
 
-
-/*
- *
- * returns true if given a string only containing space
- *
- * */
 bool SPini::isWhitespace(const std::string &s) {
     size_t fnos = s.find_first_not_of(' \t\n');
     if (fnos == s.npos) {
@@ -675,11 +542,6 @@ bool SPini::isWhitespace(const std::string &s) {
     return false;
 }
 
-/*
-
- returns value for key if it exists else it returns ""
-
- */
 std::string SPini::value_for_key(const std::string & s, const std::string key) {
     size_t start = getFirstChar(s);
     if (trim(toLower(s.substr(start, start+key.length()))) != key) return "";
@@ -697,11 +559,6 @@ std::string SPini::value_for_key(const std::string & s, const std::string key) {
     return s.substr(p);
 }
 
-/*
-
- removes some characters
-
- */
 std::string SPini::trim(std::string s) {
     size_t l = s.length();
     if (l == 0) { // string s has size of 0
@@ -718,11 +575,6 @@ std::string SPini::trim(std::string s) {
     return s.substr(b, e-b+1);
 }
 
-/*
-
- returns the same string with all characters as lowercase
-
- */
 std::string SPini::toLower(const std::string & s) {
     std::string str = s;
     for (std::string::iterator i = str.begin(); i != str.end(); i++) {
@@ -731,13 +583,6 @@ std::string SPini::toLower(const std::string & s) {
     return str;
 }
 
-/*
-
-test if the string contains a "key=value" in string
-if it does, it sets &key to key, &value to value and returns true
-else it returns false
-
-*/
 bool SPini::isKeyValue(const std::string &s, std::string &key, std::string &value) {
     size_t start = getFirstChar(s);
     size_t eqt = s.find("=", start);
