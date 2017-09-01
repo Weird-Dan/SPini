@@ -21,7 +21,6 @@ std::ostream &operator<<(std::ostream &os, IniObject const &m) {
  */
 bool SPini::Init(std::string filename) {
     m_Filename = filename;
-
     std::string ini = std::string(".ini");
     if (filename.length() >= ini.length()) {
         return (0 == filename.compare(filename.length() - ini.length(), filename.length(), ini));
@@ -370,37 +369,6 @@ void SPini::SimpleAsBool(std::string section, std::string key, bool &defout) {
 
 
 
-/*
-
- searches the ini file for key in section and returns the value of the key as a result
-
- */
-std::string SPini::GetValue(std::string section, std::string key) {
-    std::string tmp, result="", ls, sec = std::string("[") + toLower(section) + std::string("]");
-    std::ifstream file(m_Filename.c_str());
-    if (!file | !file.is_open()) return "";
-    bool right_section = false;
-    while (std::getline(file, ls)) {
-
-        if (isComment(ls)) continue;
-
-        if (right_section) {
-            if (isSection(ls)) right_section = false;
-            else {
-                tmp = value_for_key(ls, trim(toLower(key)));
-                if (tmp != "") result = tmp;
-            }
-        } else {
-            if (trim(toLower(ls)) == sec) {
-                right_section = true;
-                continue;
-            }
-        }
-    }
-
-    file.close();
-    return result;
-}
 
 /*
 
@@ -561,6 +529,7 @@ bool SPini::SetValue(std::string section, std::string key, std::string value) {
     return true;
 }
 
+
 /*
 
  test if able to access the file
@@ -572,17 +541,6 @@ bool SPini::IniExists() {
     f.close();
     return true;
 }
-
-
-/*
-
- returns the filepath of the RWIni object
-
- */
-std::string SPini::GetIniFilename() {
-    return m_Filename;
-}
-
 
 bool SPini::GetSections(std::vector<std::string> &out) {
     bool found = false;
@@ -599,6 +557,49 @@ bool SPini::GetSections(std::vector<std::string> &out) {
         }
     }
     return found;
+}
+
+
+/*
+
+ searches the ini file for key in section and returns the value of the key as a result
+
+ */
+std::string SPini::GetValue(std::string section, std::string key) {
+    std::string tmp, result="", ls, sec = std::string("[") + toLower(section) + std::string("]");
+    std::ifstream file(m_Filename.c_str());
+    if (!file | !file.is_open()) return "";
+    bool right_section = false;
+    while (std::getline(file, ls)) {
+
+        if (isComment(ls)) continue;
+
+        if (right_section) {
+            if (isSection(ls)) right_section = false;
+            else {
+                tmp = value_for_key(ls, trim(toLower(key)));
+                if (tmp != "") result = tmp;
+            }
+        } else {
+            if (trim(toLower(ls)) == sec) {
+                right_section = true;
+                continue;
+            }
+        }
+    }
+
+    file.close();
+    return result;
+}
+
+
+/*
+
+ returns the filepath of the RWIni object
+
+ */
+std::string SPini::GetIniFilename() {
+    return m_Filename;
 }
 
 
@@ -619,14 +620,12 @@ size_t SPini::getFirstChar(const std::string & str) {
 
 /**/
 bool SPini::isKey(const std::string & s, const std::string & key) {
-    size_t start = getFirstChar(s);
-    if (trim(toLower(s.substr(start, start+key.length()))) != key) return false;
+    size_t start = getFirstChar(s); // get start of string
+    if (trim(toLower(s.substr(start, start+key.length()))) != key) return false; // test if the key passed in is in the string.
     // first word is equal to key
-
-    size_t p =  s.find('=');
-    size_t fnos = s.find_first_not_of(' ', start+key.length());
-
-    if (p == std::string::npos || p != fnos) {
+    size_t p =  s.find('='); // p is the location of the first '=' sign
+    size_t fnos = s.find_first_not_of(' ', start+key.length()); // find loction of first non whitespace char after the first '=' sign
+    if (p == std::string::npos || p != fnos) { // if p is not found  or p is the last character of the string: return false;
         return false;
     }
     return true;
