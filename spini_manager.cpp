@@ -19,90 +19,6 @@ void IniManager::Clear() {
     this->data.clear();
 }
 
-void IniManager::SetValue(std::string filename, std::string section, std::string key, std::string value) {
-    // find section in data, then
-    auto search = data.find(section);
-
-    if (search != data.end()) {
-        search->second.data[key] = value;
-        ini_man.Init(filename);
-        ini_man.SetValue(section, key, value);
-    } else {
-        ini_man.Init(filename);
-        IniObject obj;
-        obj.data[key] = value;// add value to obj
-        if (ini_man.SimpleSection(section, obj)) {
-            this->data[section] = obj;
-        }
-    }
-
-}
-
-void IniManager::SetValue(std::string section, std::string key, std::string value) {
-    // find section in data, then
-    auto search = data.find(section);
-    if (search != data.end()) {
-        search->second.data[key] = value;
-        ini_man.Init(m_Filename);
-        ini_man.SetValue(section, key, value);
-    } else {
-        ini_man.Init(m_Filename);
-        IniObject obj;
-        obj.data[key] = value;// add value to obj
-        if (ini_man.SimpleSection(section, obj)) {
-            this->data[section] = obj;
-        }
-    }
-}
-
-bool IniManager::GetValue(std::string filename ,std::string section, std::string key, std::string &res) {
-    ini_man.Init(filename);
-    std::string value;
-    bool success = ini_man.GetValueAsString(section, key, value);
-    if (success) {
-        auto search = data.find(section);
-        if (search != data.end()) {
-            search->second.data[key] = value;
-        } else {
-            IniObject obj;
-            obj.filename = filename;
-            obj.section = section;
-            obj.data[key] = value;
-            // add to data
-            data[section] = obj;
-        }
-    }
-    res = value;
-    return success;
-
-}
-
-bool IniManager::GetValue(std::string section, std::string key, std::string &res) {
-    if (this->data.size() > 0) {
-        auto search = data.find(section);
-        if (search != data.end()) {
-            auto keysearch = search->second.data.find(key);
-            if (keysearch != search->second.data.end()) {
-                res = keysearch->second;
-                return true;
-            }
-        }
-    }
-
-    return false;
-
-}
-
-bool IniManager::GetSection(std::string section, IniObject &obj) {
-    auto search = data.find(section);
-    if (search != data.end()) {
-        obj = search->second;
-        return true;
-    } else {
-        return false;
-    }
-}
-
 bool IniManager::LoadIni(std::string filename) {
     std::vector<std::string> sections;
     ini_man.Init(filename);
@@ -143,11 +59,104 @@ bool IniManager::LoadIni() {
   }
 }
 
+void IniManager::SetValue(std::string filename, std::string section, std::string key, std::string value) {
+    auto search = data.find(section);
+    if (search != data.end()) { // if section found in data:
+        search->second.data[key] = value; // the value of key in memory is set to value param
+        ini_man.Init(filename);
+        ini_man.SetValue(section, key, value); // write new value to file
+    } else {
+        ini_man.Init(filename);
+        IniObject obj;
+        obj.filename = filename;
+        obj.section = section;
+        obj.data[key] = value;// add value to obj
+        ini_man.SetValue(section, key, value);
+        this->data[section] = obj;
+        /*if (ini_man.SimpleSection(section, obj)) { // this would load the value of key in file if found, before setting to the value param
+            this->data[section] = obj;
+        }*/
+    }
+
+}
+
+void IniManager::SetValue(std::string section, std::string key, std::string value) {
+    // find section in data, then
+    auto search = data.find(section);
+    if (search != data.end()) {
+        search->second.data[key] = value;
+        ini_man.Init(m_Filename);
+        ini_man.SetValue(section, key, value);
+    } else {
+        ini_man.Init(m_Filename);
+        IniObject obj;
+        obj.filename = filename;
+        obj.section = section;
+        obj.data[key] = value;// add value to obj
+        this->data[section] = obj;
+        /*if (ini_man.SimpleSection(section, obj)) { // this would load the value of key in file if found, before setting to the value param
+            this->data[section] = obj;
+        }*/
+    }
+}
+
+bool IniManager::GetValue(std::string filename ,std::string section, std::string key, std::string &res) {
+    ini_man.Init(filename);
+    std::string value; // value to be returned
+    bool success = ini_man.GetValueAsString(section, key, value); // tries to read value from file
+    if (success) {
+        auto search = data.find(section);
+        if (search != data.end()) {
+            search->second.data[key] = value;
+        } else {
+            IniObject obj;
+            obj.filename = filename;
+            obj.section = section;
+            obj.data[key] = value;
+            // add to data
+            data[section] = obj;
+        }
+    }
+    // is not success , shall it try to find it in the data variable?
+    res = value;// return value in result
+    return success;
+
+}
+
+bool IniManager::GetValue(std::string section, std::string key, std::string &res) {
+    if (this->data.size() > 0) {
+        auto search = data.find(section);
+        if (search != data.end()) {
+            auto keysearch = search->second.data.find(key);
+            if (keysearch != search->second.data.end()) {
+                res = keysearch->second;
+                return true;
+            }
+        }
+    }
+
+    return false;
+
+}
+
+bool IniManager::GetSection(std::string section, IniObject &obj) {
+  // should it search the ini-file for the section if not found?
+    auto search = data.find(section);
+    if (search != data.end()) {
+        obj = search->second;
+        return true;
+    } else {
+        return false;
+    }
+}
+
+
+
 bool IniManager::WriteSection(std::string filename, std::string section) {
     auto search = data.find(section);
-    if(search != data.end()) {
+    if(search != data.end()) {// if the section exists in memory
         ini_man.Init(filename);
-        if (ini_man.SetSection(section, search->second)) return true;
+        if (ini_man.SetSection(section, search->second)) return true; // write section to file
     }
     return false;
 }
@@ -171,7 +180,7 @@ bool IniManager::WriteData(std::string filename) {
 
 
 // GetSetValueAsX (filename)
-
+// why not only do a function call to the spini-object instead of doing basically the same thing// except it does add it to the memory 
 void IniManager::GetSetValueAsString(std::string filename, std::string section, std::string key, std::string &res) {
     std::string value;
     bool got = GetValue(filename, section, key, value);
