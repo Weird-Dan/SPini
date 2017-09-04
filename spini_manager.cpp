@@ -150,8 +150,6 @@ bool IniManager::GetSection(std::string section, IniObject &obj) {
     }
 }
 
-
-
 bool IniManager::WriteSection(std::string filename, std::string section) {
     auto search = data.find(section);
     if(search != data.end()) {// if the section exists in memory
@@ -177,10 +175,6 @@ bool IniManager::WriteData(std::string filename) {
     return res;
 }
 
-
-
-// GetSetValueAsX (filename)
-// why not only do a function call to the spini-object instead of doing basically the same thing// except it does add it to the memory 
 void IniManager::GetSetValueAsString(std::string filename, std::string section, std::string key, std::string &res) {
     std::string value;
     bool got = GetValue(filename, section, key, value);
@@ -251,8 +245,6 @@ void IniManager::GetSetValueAsBool(std::string filename, std::string section, st
     }
 }
 
-// GetSetValueAsX
-
 void IniManager::GetSetValueAsString(std::string section, std::string key, std::string &res) {
     std::string value;
     bool got = GetValue(m_Filename, section, key, value);
@@ -322,8 +314,6 @@ void IniManager::GetSetValueAsBool(std::string section, std::string key, bool &r
 
     }
 }
-
-// GetValueAsX
 
 bool IniManager::GetValueAsString(std::string section, std::string key, std::string &res) {
     auto secsearch = data.find(section);
@@ -410,12 +400,6 @@ bool IniManager::GetValueAsBool(std::string section, std::string key, bool &res)
 // private metods
 ////////////////////////////////////////////////////////////////////////
 
-
-/*
-
- removes some characters
-
- */
 std::string IniManager::trim(std::string s) {
     size_t l = s.length();
     if (l == 0) { // string s has size of 0
@@ -432,11 +416,6 @@ std::string IniManager::trim(std::string s) {
     return s.substr(b, e-b+1);
 }
 
-/*
-
- returns the same string with all characters as lowercase
-
- */
 std::string IniManager::toLower(const std::string & s) {
     std::string str = s;
     for (std::string::iterator i = str.begin(); i != str.end(); i++) {
@@ -445,11 +424,6 @@ std::string IniManager::toLower(const std::string & s) {
     return str;
 }
 
-/*
-
- returns the location of the first character that is not space of string
-
- */
 size_t IniManager::getFirstChar(const std::string & str) {
     return str.find_first_not_of(' ');
 }

@@ -13,6 +13,10 @@
 
 class SPini {
 private:
+
+  /*
+    The filename of the ini-file to read and write to.
+  */
   std::string m_Filename;
 
 public:
@@ -200,66 +204,65 @@ public:
     std::string GetValue(std::string section, std::string key);
 
     /*
-      returns the string of the filename variable in the SPini object.
+      Returns the string of the filename variable in the SPini object.
     */
     std::string GetIniFilename();
 
 private:
 
     /*
-      returns the location of the first character that is not some sort of whitespace.
+      Returns the location of the first character that is not some sort of whitespace.
     */
     size_t getFirstChar(const std::string & str);
 
     /*
-      returns true if the string is of the structure "key=nonwhitespace" and
+      Returns true if the string is of the structure "key=nonwhitespace" and
       the given key is in the string.
     */
     bool isKey(const std::string & s, const std::string & key);
 
     /*
-      returns true if the string is of structure "[sectionname]"
+      Returns true if the string is of structure "[sectionname]"
       but only if it starts with either whitespace then structure or directly
       starts with the structure
     */
     bool isSection(const std::string & s);
 
     /*
-      returns true if the strings first non shitespace character is either '#' or ';'
+      Returns true if the strings first non shitespace character is either '#' or ';'
     */
     bool isComment(const std::string & s);
 
     /*
-      returns true if the srting only contains whitespace.
+      Returns true if the srting only contains whitespace.
     */
     bool isWhitespace(const std::string & s);
 
     /*
-      returns the value part of "key=value" of the given string if the string starts with "key=",
+      Returns the value part of "key=value" of the given string if the string starts with "key=",
       if the string does not contain "key=" it returns an ampty string.
     */
     std::string value_for_key(const std::string & s, const std::string key);
 
     /*
-      removes all whitespace from the start and end of the string , the returns it.
+      Removes all whitespace from the start and end of the string , the returns it.
     */
     std::string trim(std::string s);
 
     /*
-      returns the given string in lowercase characters.
+      Returns the given string in lowercase characters.
     */
     std::string toLower(const std::string & s);
 
     /*
-      returns true if string s is a 'key'='value' formatted string
+      Returns true if string s is a 'key'='value' formatted string
       if so key is set to the key of the string and value is set to the value of the string.
     */
     bool isKeyValue(const std::string &s, std::string &key, std::string &value);
 };
 
-/// override << for ini_object
 /*
-  overrides the << operator of ini_object to enable printing the properties of
+  Overrides the << operator of ini_object to enable printing the properties of
   the object to a stream.
 */
 std::ostream &operator<<(std::ostream &os, IniObject const &m);
